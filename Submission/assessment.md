@@ -56,8 +56,6 @@ No AI tools were used in any way
 
 ---
 
-# Evaluation Tasks — Week 9
-
 ## Task T1: Filter Tasks
 
 **Scenario**:
@@ -251,28 +249,25 @@ Date: 2025-10-15 Participant code: P1 Session ID: X7kL9p Consent: Verbal consent
 
 ## 2. Findings Table
 
-**Instructions**: Fill in this table with 3-5 findings from your pilots. Link each finding to data sources.
-
 | Finding | Data Source | Observation (Quote/Timestamp) | WCAG | Impact (1-5) | Inclusion (1-5) | Effort (1-5) | Priority |
 |---------|-------------|------------------------------|------|--------------|-----------------|--------------|----------|
-| SR errors not announced | metrics.csv L47-49 + P2 notes 14:23 | P2: "I didn't hear any error" | 3.3.1 Level A | 5 | 5 | 3 | 7 |
-| [Your finding 2] | [Link to metrics.csv line OR pilot notes] | [Participant quote + timestamp] | [WCAG criterion] | [1-5] | [1-5] | [1-5] | [Score] |
-| [Your finding 3] | | | | | | | |
-| [Your finding 4] | | | | | | | |
-| [Your finding 5] | | | | | | | |
+| SR errors not announced | pilot-notes P4 | P2: "I didn't hear any error" | 3.3.1 Level A | 5 | 5 | 3 | 7 |
+| No task delete confirmation in noJS| pilot-notes P3 T4 |"Literally 1 or two things were wrong I think one of them was with the lack of confirmation with deleting tasks, it felt really weird. | WCAG 2.2.3 | 3 | 4 | 2 | 5 |
+|Button is not contrasted enough, espeically in sunlight | pilot-notes P2-debrief|"Though I would love it if the colours used for the selection was more contrasty, sometimes it was hard to see if the item was selected" | WCAG 2.2.1 | 4 | 4 | 1 | 7 |
+| No screen reader output for comfirmation of task added read out | pilot-notes.csv - debreif P4 | (asked about confirmation) "Oh yeah, theres no confirmation, and sometimes I missed the text and had to repeat it."| WCAG 3.2.1 | 5 | 4 | 3 | 6  |
+| add a check for duplicate tasks | backlog.csv - self found | self-found, no quote avaliable | WCAG 3.3.2 | 2 | 2 | 1 | 3 |
 
 **Priority formula**: (Impact + Inclusion) - Effort
 
 **Top 3 priorities for redesign**:
-1. [Finding #X - Priority score Y]
-2. [Finding #X - Priority score Y]
-3. [Finding #X - Priority score Y]
+1. Button selection contrast too low - Priority 8
+2. Screen reader confirmations not announced - Priority 7
+3. Screen reader error not announced - Priority 7
 
 ---
 
 ## 3. Pilot Metrics (metrics.csv)
 
-**Instructions**: Paste your raw CSV data here OR attach metrics.csv file
 
 ```csv
 ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
@@ -316,10 +311,17 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 ```
 
 **Participant summary**:
-- **P1**: Standard Mouse + HTMX
+- **P1**: Standard Mouse + HTMX 
 - **P2**: Standard Keyboard + HTMX
 - **P3** Standard Mouse + noJS
 - **P4** Standard Mouse (But keyboard was allowed and used) + Screen reader + HTMX
+
+**Participant cookies**:
+- **P1**: P1_5zljfj
+- **P2**: P2_JUisui
+- **P3**: P3_1FhG3d
+- **P4**: P4_AEh6u7
+
 
 **Total participants**: n = 4
 
@@ -327,57 +329,194 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 ## 4. Implementation Diffs
 
-**Instructions**: Show before/after code for 1-3 fixes. Link each to findings table.
 
-### Fix 1: [Fix Name]
+### Fix 1: Button Selection Contrast is too low
 
-**Addresses finding**: [Finding #X from table above]
+**Addresses finding**: Button selection contrast is very low, its very hard to read what is selected and what isn't, espeically for people who have low vision or cannot see due to facots like sunlight etc.  
 
-**Before** ([file path:line number]):
-```kotlin
-// ❌ Problem code
-[Paste your original code here]
+**Before** /template/layout/base.peb LINE 52 - 56 :
+```html
+    /* Override Pico.css button color for WCAG 1.4.3 AA compliance */
+    button[type="submit"],
+    button {
+      color: white !important; /* White text on blue background for better contrast */
+    }
 ```
 
-**After** ([file path:line number]):
-```kotlin
-// ✅ Fixed code
-[Paste your improved code here]
+**After** /template/layout/base.peb LINE 52 - 63:
+```html
+    /* Override Pico.css button color for WCAG 1.4.3 AA compliance */
+    button[type="submit"],
+    button {
+      color: white !important; /* White text on blue background for better contrast */
+    }
+
+    button:hover,
+    button[type="submit"]:hover {
+      background-color: #519de9ff !important; /* lighter blue hover */
+      color: #fff !important;               /* keep text white */
+    }
 ```
 
-**What changed**: [1 sentence - what you added/removed/modified]
+**What changed**: I added a button:hover class so the button hover will be lighter than the defualt given by the stylesheet. This is much more effective and properly complies with the WCAG 1.4.3 Guidelines.
 
-**Why**: [1 sentence - which WCAG criterion or usability issue this fixes]
+**Evidence**: Evidence submitted in the Evidence Folder (fix1-1), the "Apply filter" task is hovered, and there is barely a colour change in the button. (fix1-2) shows the fix, the colour contrast is much better and is more visible.
 
-**Impact**: [1-2 sentences - how this improves UX, who benefits]
+**Why**: WCAG 1.4.3, we had an issue with accessibility, where, espeically on keyboards, that the highlighted input was not very obvious to the user, espeically for people who are visually impaired or colourblind. 
+
+**Impact**: This fixes this issue by increasing the contrast of buttons that are pressed, by manually overriding the button hover colour. This also (in my opinion) makes the UX nicer, by using a different shade of blue which is nicer on the eyes than the original colour.
 
 ---
 
-### Fix 2: [Fix Name]
+### Fix 2: Delete Message Confirmation
 
-**Addresses finding**: [Finding #X]
+**Addresses finding**: Fixing the delete message dialogue not appearing in noJS mode 
 
-**Before**:
-```kotlin
-[Original code]
+**Before**: /templates/tasks/_item.peb LINE 11 - 17
+```html
+
+<form action="/tasks/{{ task.id }}/delete/" method="get" style="display:inline;"
+      hx-delete="/tasks/{{ task.id }}"
+      hx-target="#task-{{ task.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="Delete the task '{{ task.title }}'?">
+  <button type="submit" aria-label="Delete task: {{ task.title }}">Delete</button>
+</form>
 ```
 
-**After**:
+**After**:   
+
+/templates/tasks/_item.peb LINE 11 - 17   
+This changes the delete button to the confirm page if HTMX is not being used
+```html
+
+<form action="/tasks/{{ task.id }}/delete/confirm" method="get" style="display:inline;"
+      hx-delete="/tasks/{{ task.id }}"
+      hx-target="#task-{{ task.id }}"
+      hx-swap="outerHTML"
+      hx-confirm="Delete the task '{{ task.title }}'?">
+  <button type="submit" aria-label="Delete task: {{ task.title }}">Delete</button>
+</form>
+```   
+/src/main/taskRoutes.kt LINE 180 - 195 (NEW LINES)   
+These handle the routing to a new page if HTMX is not used
 ```kotlin
-[Fixed code]
+private suspend fun ApplicationCall.handleDeleteConfirm(store: TaskStore) {
+    val id = parameters["id"] ?: run {
+        respond(HttpStatusCode.BadRequest, "Missing task ID")
+        return
+    }
+
+    val task = store.getById(id)
+    if (task == null) {
+        respond(HttpStatusCode.NotFound, "Task not found")
+        return
+    }
+
+    // Render a confirmation page template
+    val html = renderTemplate("tasks/confirm_delete.peb", mapOf("task" to task.toPebbleContext()))
+    respondText(html, ContentType.Text.Html)
+}
+```   
+   
+/templates/tasks/confirm_delete.peb   
+This is the new page that is shown if HTMX is not being used, and javascript cannot be used. This is needed to send the confirmation message to the user   
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}COMP2850 Task Manager{% endblock %}</title>
+  
+  {# Pico CSS for baseline accessible styles (WCAG 2.2 AA compliant) #}
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css">
+  
+  {# HTMX for progressive enhancement #}
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  
+  <style>
+    /* Visually hidden but accessible to screen readers (WCAG 1.3.1) */
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+    
+    /* Skip link for keyboard navigation (WCAG 2.4.1) */
+    .skip-link {
+      position: absolute;
+      left: -10000px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+    .skip-link:focus {
+      position: static;
+      width: auto;
+      height: auto;
+      background: #1976d2;
+      color: white;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      z-index: 9999;
+    }
+    
+    /* Pagination styles */
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    /* Override Pico.css button color for WCAG 1.4.3 AA compliance */
+    button[type="submit"],
+    button {
+      color: white !important; /* White text on blue background for better contrast */
+    }
+
+    button:hover,
+    button[type="submit"]:hover {
+      background-color: #519de9ff !important; /* lighter blue hover */
+      color: #fff !important;               /* keep text white */
+    }
+  </style>
+</head>
+<body>
+  {# Include header with navigation and accessibility features #}
+  {% include "_layout/_header.peb" %}
+  
+  {# Main landmark for screen readers (WCAG 1.3.1) #}
+  {# tabindex="-1" allows programmatic focus for skip link #}
+  <main id="main" class="container" tabindex="-1">
+    {% block content %}
+    {# Page-specific content goes here #}
+    {% endblock %}
+  </main>
+  {# Include footer with helpful links and session info #}
+</body>
+</html>
+
+<h2>Confirm deletion</h2>
+<p>Are you sure you want to delete "{{ task.title }}"?</p>
+
+<form action="/tasks/{{ task.id }}/delete" method="post"style="display:inline;">
+  <button type="submit">Yes, delete</button>
+  <a href="/tasks">Cancel</a>
+</form>
 ```
 
-**What changed**:
+**What changed**: I added a fallback confiramtion page for noJS, as the item would otherwise be deleted instantly
 
-**Why**:
+**Evidence**: fix 2-1 shows the fix, a new confirm delete screen for noJS. The functionality with javascript stays the exact same, and works flawlessly.   
 
-**Impact**:
+**Why**: Because otherwise there is no confirmation in noJS of an item being deleted, and therefore the user can accidently delete items from the list accidentally.
 
----
-
-[Add Fix 3 if applicable]
-
----
+**Impact**: Users who do not have access to javascript and htmx will find it easier to use the program for its intended purposes.
 
 ## 5. Verification Results
 
@@ -388,34 +527,34 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 | Check | Criterion | Level | Result | Notes |
 |-------|-----------|-------|--------|-------|
 | **Keyboard (5)** | | | | |
-| K1 | 2.1.1 All actions keyboard accessible | A | [pass/fail] | [e.g., "Tested Tab/Enter on all buttons"] |
-| K2 | 2.4.7 Focus visible | AA | [pass/fail] | [e.g., "2px blue outline on all interactive elements"] |
-| K3 | No keyboard traps | A | [pass/fail] | [e.g., "Can Tab through filter, edit, delete without traps"] |
-| K4 | Logical tab order | A | [pass/fail] | [e.g., "Top to bottom, left to right"] |
-| K5 | Skip links present | AA | [pass/fail/n/a] | [e.g., "Skip to main content works"] |
+| K1 | 2.1.1 All actions keyboard accessible | A | [pass] | Tab and enter buttons worked on every button, tested multiple times with and without JS. No extra buttons or any selections options are present. |
+| K2 | 2.4.7 Focus visible | AA | [pass] | Now with the hover colour darker, it is much easier to figure out what is hovered on and not.  |
+| K3 | No keyboard traps | A | [pass] | No keyboard traps detected |
+| K4 | Logical tab order | A | [pass] | Top to bottom through every button, and if the buttons are next to eachother then it works left to right before going down. It works in the list, making sure every button in the list is ordered first before moving out of the list.|
+| K5 | Skip links present | AA | [n/a] | Not implemented |
 | **Forms (3)** | | | | |
-| F1 | 3.3.2 Labels present | A | [pass/fail] | [e.g., "All inputs have <label> or aria-label"] |
-| F2 | 3.3.1 Errors identified | A | [pass/fail] | [e.g., "Errors have role=alert (FIXED in Fix #1)"] |
-| F3 | 4.1.2 Name/role/value | A | [pass/fail] | [e.g., "All form controls have accessible names"] |
+| F1 | 3.3.2 Labels present | A | [pass] | All inputs have <label>|
+| F2 | 3.3.1 Errors identified | A | [pass] | Errors have "role=Alert" as they should have|
+| F3 | 4.1.2 Name/role/value | A | [pass] | All form controls have accessible names |
 | **Dynamic (3)** | | | | |
-| D1 | 4.1.3 Status messages | AA | [pass/fail] | [e.g., "Status div has role=status"] |
-| D2 | Live regions work | AA | [pass/fail] | [e.g., "Tested with NVDA, announces 'Task added'"] |
-| D3 | Focus management | A | [pass/fail] | [e.g., "Focus moves to error summary after submit"] |
+| D1 | 4.1.3 Status messages | AA | [pass] | Status div has role=status |
+| D2 | Live regions work | AA | [pass] | Tested with NVDA, announces 'Task added' |
+| D3 | Focus management | A | [pass] | Focus will always move to the error when an error occurs|
 | **No-JS (3)** | | | | |
-| N1 | Full feature parity | — | [pass/fail] | [e.g., "All CRUD ops work without JS"] |
-| N2 | POST-Redirect-GET | — | [pass/fail] | [e.g., "No double-submit on refresh"] |
-| N3 | Errors visible | A | [pass/fail] | [e.g., "Error summary shown in no-JS mode"] |
+| N1 | Full feature parity | — | [pass] | All CRUD operations work fine without NO-JS, will be further tested with a new pilot in a later point |
+| N2 | POST-Redirect-GET | — | [pass] | Only submitted once, and appears in the CSV|
+| N3 | Errors visible | A | [pass] | Errors work in both noJS and HMTX |
 | **Visual (3)** | | | | |
-| V1 | 1.4.3 Contrast minimum | AA | [pass/fail] | [e.g., "All text 7.1:1 (AAA) via CCA"] |
-| V2 | 1.4.4 Resize text | AA | [pass/fail] | [e.g., "200% zoom, no content loss"] |
-| V3 | 1.4.11 Non-text contrast | AA | [pass/fail] | [e.g., "Focus indicator 4.5:1"] |
+| V1 | 1.4.3 Contrast minimum | AA | [pass] | With the colour fix, 7.1:1 via CCA is met. |
+| V2 | 1.4.4 Resize text | AA | [pass] | No context lost at small and large zoom levels, and the base zoom level is adequite for most devices and people, with high readability. |
+| V3 | 1.4.11 Non-text contrast | AA | [pass] | Indicators are contrasted properly etc.|
 | **Semantic (3)** | | | | |
-| S1 | 1.3.1 Headings hierarchy | A | [pass/fail] | [e.g., "h1 → h2 → h3, no skips"] |
-| S2 | 2.4.1 Bypass blocks | A | [pass/fail] | [e.g., "<main> landmark, <nav> for filter"] |
-| S3 | 1.1.1 Alt text | A | [pass/fail] | [e.g., "No images in interface OR all have alt"] |
+| S1 | 1.3.1 Headings hierarchy | A | [pass] | No out of place headings at all |
+| S2 | 2.4.1 Bypass blocks | A | [pass] | Correct blocks are used |
+| S3 | 1.1.1 Alt text | A | [pass] | No images in interface, so no Alt text needed for images. |
 
-**Summary**: [X/20 pass], [Y/20 fail]
-**Critical failures** (if any): [List any Level A fails]
+**Summary**: [20/20 pass], [0/20 fail]
+**Critical failures** (if any): No critical failiures which can impact the usability of the program.
 
 ---
 
@@ -425,19 +564,28 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 | Metric | Before (Week 9, n=X) | After (Week 10, n=Y) | Change | Target Met? |
 |--------|----------------------|----------------------|--------|-------------|
-| SR error detection | [e.g., 0/2 (0%)] | [e.g., 2/2 (100%)] | [e.g., +100%] | [✅/❌] |
-| Validation error rate | [e.g., 33%] | [e.g., 0%] | [e.g., -33%] | [✅/❌] |
-| Median time [Task X] | [e.g., 1400ms] | [e.g., 1150ms] | [e.g., -250ms] | [✅/❌] |
-| WCAG [criterion] pass | [fail] | [pass] | [— ] | [✅/❌] |
+| Accidental deletion rate on noJS| [33%] | [0%] | [-33%] | [✅] |
+| WCAG [2.2.1] pass | [fail] | [pass] | [-Changed button contrast] | [✅] |
 
 **Re-pilot details**:
-- **P5** (post-fix): [Variant - e.g., "Screen reader user, NVDA + keyboard"] - [Date piloted]
-- **P6** (if applicable): [Variant] - [Date]
+## Pilot 5
+Date: 2025-06-12 
+Participant code: P5 
+Session ID: P5_1FHG6  
+Variant: Keyboard and NoJS (HTML, keyboard, NoJS)  
+### Pretest Notes:   
+P5 has already done this before, and will test and comment on the changes.  
 
-**Limitations / Honest reporting**:
-[If metrics didn't improve or only modestly: explain why. Small sample size? Wrong fix? Needs more iteration? Be honest - valued over perfect results.]
+### Debrief P5:  
+- "I think the new webpage is very good and definitely will help me to not delete random tasks accidentally"
+- "Paired with the new button hover colour, I think this will prevent accidentally pressing wrong buttons, submitting blank forms, etc."
 
----
+
+**Limitations / Honest reporting**:   
+
+Overall, I think that I did a good job adding small improvements to the program based off feedback. I think that the fixes were complex enough to challenge me, espeically since I have not had much experience coding in HTML before, however simple enough that they only took a couple hours, while having (hopefully) a large impact on users.   
+
+
 
 ## 6. Evidence Folder Contents
 
@@ -447,15 +595,14 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 | Filename | What it shows | Context/Link to finding |
 |----------|---------------|-------------------------|
-| before-sr-error.png | Error message without role="alert" | Finding #1 - SR errors not announced |
-| after-sr-error.png | Error message WITH role="alert" added | Fix #1 verification |
-| regression-axe-report.png | axe DevTools showing 0 violations | Verification Part A |
-| [your-screenshot-3.png] | [Description] | [Which finding/fix this supports] |
+| fix1-1.png | The hover without the fix | Fix #1, changing the button contrast to be more visible |
+| fix1-2.png | The hover with the fix | Fix #1 verification |
+| fix2-1.png | The new fix, with a new confirmation screen for noJS | Fix #2 Verification |
 
 **PII check**:
-- [ ] All screenshots cropped to show only relevant UI
-- [ ] Browser bookmarks/tabs not visible
-- [ ] Participant names/emails blurred or not visible
+- [ ✅ ] All screenshots cropped to show only relevant UI
+- [ ✅ ] Browser bookmarks/tabs not visible
+- [ ✅ ] Participant names/emails blurred or not visible
 
 ---
 
@@ -463,15 +610,25 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 **Instructions**: Attach pilot notes as separate files (P1-notes.md, P2-notes.md, etc.). Summarize key observations here.
 
-**P1** ([ Variant - e.g., "Standard mouse + HTMX"]):
-- **Key observation 1**: [Quote + timestamp - e.g., "Struggled with filter button (09:47)"]
-- **Key observation 2**: [Quote + timestamp]
+**P1** Standard (HTMX, mouse, JS-on):
+- **Key observation 1**: "No "no result found" message ever" 
+- **Key observation 2**: "It worked well enough that i can navigate the system easily" 
 
-**P2** ([Variant]):
-- **Key observation 1**: [Quote + timestamp]
-- **Key observation 2**: [Quote + timestamp]
+**P2** Keyboard (HTMX, keyboard, JS-on):
+- **Key observation 1**: " I thought the system worked well, even though I did not have much past experience using a keyboard as the only input"  
+- **Key observation 2**: "Though I would love it if the colours used for the selection was more contrasty, sometimes it was hard to see if the item was selected" 
 
-[Repeat for P3, P4 if applicable]
+**P3** noJS (HTMX, mouse, noJS):
+- **Key observation 1**: "Literally 1 or two things were wrong I think one of them was with the lack of confirmation with deleting tasks, it felt really weird.  
+- **Key observation 2**: "I thought that this was quite easy to use"
+
+**P4** Screen Reader (HTMX, mouse allowed (but keyboard actually used), JS-on) :
+- **Key observation 1**: (asked about confirmation) "Oh yeah, theres no confirmation, and sometimes I missed the text and had to repeat it."  
+- **Key observation 2**: "It was really hard to visualise the website, but that was expected as I didn't do anything like this before"  
+
+**P5** Keyboard and NoJS (HTML, keyboard, NoJS) (RETEST)  :  
+- **Key observation 1**: "I think the new webpage is very good and definitely will help me to not delete random tasks accidentally"  
+- **Key observation 2**: "Paired with the new button hover colour, I think this will prevent accidentally pressing wrong buttons, submitting blank forms, etc." 
 
 ---
 
@@ -479,18 +636,18 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 
 **Instructions**: Pick ONE finding and show complete evidence trail from data → fix → verification.
 
-**Finding selected**: [e.g., "Finding #1 - SR errors not announced"]
+**Finding selected**: Finding 2, no-JS deletion confirmation missing
 
 **Evidence trail**:
-1. **Data**: metrics.csv lines 47-49 show P2 (SR user) triggered validation_error 3 times
-2. **Observation**: P2 pilot notes timestamp 14:23 - Quote: "I don't know if it worked, didn't hear anything"
-3. **Screenshot**: before-sr-error.png shows error message has no role="alert" or aria-live
-4. **WCAG**: 3.3.1 Error Identification (Level A) violation - errors not programmatically announced
-5. **Prioritisation**: findings-table.csv row 1 - Priority score 7 (Impact 5 + Inclusion 5 - Effort 3)
-6. **Fix**: implementation-diffs.md Fix #1 - Added role="alert" + aria-live="assertive" to error span
-7. **Verification**: verification.csv Part A row F2 - 3.3.1 now PASS (tested with NVDA)
-8. **Before/after**: verification.csv Part B - SR error detection improved from 0% to 100%
-9. **Re-pilot**: P5 (SR user) pilot notes - "Heard error announcement immediately, corrected and succeeded"
+1. **Data**: pilot-notes.md - P3 task T4
+2. **Observation**: Confirmation didn't work, and the task was suddenly deleted, and it caught the user off guard
+3. **Screenshot**: fix2-2.png shows the confirmation not working, instant transmission back to task screen
+4. **WCAG**:
+5. **Prioritisation**: findings-table.csv row 2 - Priority score 7 (Impact 5 + Inclusion 5 - Effort 3)
+6. **Fix**: assessment.md FIX 2, fixes shown in kotlin and HTMX to make a new results page
+7. **Verification**: pilot-retest.md - P5 reverified that the task worked successfully.
+8. **Before/after**: error confirmation screen is always shown in noJS
+9. **Re-pilot**: - I think the new webpage is very good and definitely will help me to not delete random tasks accidentally
 
 **Complete chain**: Data → Observation → Interpretation → Fix → Verification ✅
 

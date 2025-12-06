@@ -27,7 +27,7 @@
 
 .skip-link:focus {
   top: 0;
-  outline: 3px solid #4A90E2;
+  outline: 3px solid #0a3d57;
   outline-offset: 2px;
 }
 
@@ -50,7 +50,7 @@
    Focus Indicators (WCAG 2.4.7)
    ======================================== */
 *:focus {
-  outline: 3px solid #4A90E2;
+  outline: 3px solid #0a3d57;
   outline-offset: 2px;
 }
 
@@ -60,7 +60,7 @@ a:focus,
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 3px solid #4A90E2;
+  outline: 3px solid #0a3d57;
   outline-offset: 2px;
 }
 
@@ -168,12 +168,12 @@ select:focus {
 }
 
 .task-item:hover {
-  background-color: var(--pico-card-background-color, #f5f5f5);
+  background-color: var(--pico-card-background-color, #0e2d52);
 }
 
 .task-item:focus-within {
   background-color: var(--pico-card-background-color, #f5f5f5);
-  border-color: var(--pico-primary, #4A90E2);
+  border-color: var(--pico-primary, #0e2d52);
 }
 
 .task-item.completed {
@@ -213,6 +213,19 @@ select:focus {
   margin: 0;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
+}
+
+
+.btn-primary {
+  background-color: #0a3d57;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  transition: background-color 150ms ease;
+}
+.btn-primary:hover {
+  background-color: #1976d2;
 }
 
 /* ========================================

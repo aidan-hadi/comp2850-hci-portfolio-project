@@ -73,8 +73,14 @@
     {# Page-specific content goes here #}
     {% endblock %}
   </main>
-  
   {# Include footer with helpful links and session info #}
-  {% include "_layout/_footer.peb" %}
 </body>
 </html>
+
+<h2>Confirm deletion</h2>
+<p>Are you sure you want to delete "{{ task.title }}"?</p>
+
+<form action="/tasks/{{ task.id }}/delete" method="post"style="display:inline;">
+  <button type="submit">Yes, delete</button>
+  <a href="/tasks">Cancel</a>
+</form>
