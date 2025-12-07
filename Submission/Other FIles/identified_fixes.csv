@@ -1,0 +1,7 @@
+id,week,priority,category,description,wcag,status,evidence,mitigation,candidate_fix
+
+wk9-02,9,high,ux,"colour of button when selected isnt contrasted enough",3.3.1,open,wk9/lab-wk9/research/data-log,"change selected button colour",true
+
+wk9-04,9,medium,ux,"confirmation of task added and stuff should be read out instantly",3.3.1,open,wk9/lab-wk9/research/data-log,"add new screenreader prompts",false
+
+wk8-01,8,high,parity,"Delete confirmation missing in no-JS",3.3.4,open,,"add new delete confirmation prompts",false

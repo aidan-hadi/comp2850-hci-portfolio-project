@@ -4,8 +4,6 @@ Pilot 1 - Normal
 Pilot 2 - KB  
 Pilot 3 - NoJS  
 Pilot 4 - Screen reader  
-I want 2 normal pilots just for data collection  
-
 ## Pilot 1  
 Date: 2025-02-12  
 Participant code: P1  
